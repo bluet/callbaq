@@ -3,7 +3,8 @@
 **callbaq** - Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable.
 
 ## SYNOPSIS
-```
+
+```javascript
 var callbaq = require('./index');
 var cb1 = new callbaq;
 
@@ -33,7 +34,7 @@ here we go : y0y0
 
 Get a new callback queue / flow.
 
-```
+```javascript
 var callbaq = require('./index');
 var cb1 = new callbaq;
 ```
@@ -46,7 +47,7 @@ The parameters for callback are:
 1. `callbaq` instance of the current callback queue.
 2. params from `start()` or the output of prevoius (step) callback function.
 
-```
+```javascript
 cb1.add(function (cbq, input) {
         console.log("something cool : " + input);
         cbq.next("a secret");
@@ -58,7 +59,7 @@ cb1.add(function (cbq, input) {
 
 Check out from the current step and pass result to next step / callback function when works are done.
 
-```
+```javascript
 cb1.add(function (cbq, input) {
         // do something
         cbq.next("A master piece");
@@ -69,7 +70,7 @@ cb1.add(function (cbq, input) {
 
 Start and walk through the workflow from step 0.
 
-```
+```javascript
 cb1.start("new world!");
 ```
 
@@ -79,7 +80,7 @@ You can have multiple callbaq instances working together or independently.
 
 Just new some and enjoy them.
 
-```
+```javascript
 var callbaq = require('./index');
 var cb1 = new callbaq;
 var cb2 = new callbaq;
