@@ -140,3 +140,6 @@ If you find this module useful, please give me a Star. I'll be happy whole day!
 
 Hope this module can save your time, a tree, and a kitten.
 
+## SEE ALSO
+
+AnyEvent::CallbackStack - Perl version https://github.com/BlueT/AnyEvent-CallbackStack
