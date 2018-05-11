@@ -1,5 +1,5 @@
 /*
- * callbackQ - Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable.
+ * callbaq - Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable.
  *
  * Copyright (c) 2018, BlueT - Matthew Lien - 練喆明
  * 
@@ -7,33 +7,76 @@
  * First Release Date: 2018-05-11
  */
 
-function callbackQ (...args) {
+DEBUG = 0;
+
+function callbaq (...args) {
 	var self = this;
 	
 	this._cbq = [];
 	//~ push @cbq, AE::cv;
 	this._current_step = 0;
 	
-	console.log( 'New ' + JSON.stringigy(this, null, 4) ) if DEBUG;
+	if (DEBUG) {
+		console.log( 'New ' + JSON.stringify(this, null, 4) );
+	}
 };
 
 
-callbackQ.prototype.cbq = function (...args) {
+callbaq.prototype.cbq = function (args) {
 	var self = this;
+
+	if (DEBUG) {
+		console.log("in cbq!");
+		console.log('args:');
+		console.log(typeof(args))
+		// console.log( 'args ' + JSON.stringify(args, null, 4) );
+		console.log( args );
+	}
+
+	if (DEBUG) {
+		console.log('this._cbq:');
+		console.log(typeof(this._cbq))
+		// console.log( 'args ' + JSON.stringify(args, null, 4) );
+		console.log( this._cbq );
+	}
 	
-	push this._cbq, @_ if @_;
+	if (args) {
+		this._cbq.push(args);
+	}
+
+	if (DEBUG) {
+		console.log( 'CBQ ' + JSON.stringify(this, null, 4) );
+		console.log( this._cbq );
+		// console.log( 'ADD ' + this );
+	}
 	
 	return this._cbq;
 }
 
 
-callbackQ.prototype.start = function (...args) {
+
+callbaq.prototype.current_step = function current_step (args) {
 	var self = this;
 	
-	this.current_step = 0;
+	if (args) {
+		this._current_step = args;
+	}
+
+	return this._current_step;
+}
+
+
+callbaq.prototype.start = function (...args) {
+	var self = this;
 	
-	console.log( 'New ' + JSON.stringigy(this, null, 4) ) if DEBUG;
-	this.step(this.current_step, args);
+	this._current_step = 0;
+	
+	if (DEBUG) {
+		console.log( args );
+		console.log( 'Start ' + JSON.stringify(this, null, 4) );
+	}
+	// this.step(this.current_step(), args);
+	this.step(this.current_step(), args);
 }
 
 
@@ -45,52 +88,79 @@ callbackQ.prototype.start = function (...args) {
  * @returns {Function} handler
  * 
  */
-callbackQ.prototype.add = function (...args) {
+callbaq.prototype.add = function (args) {
 	var self = this;
-	this.cbq(AE::cv);
+	if (DEBUG) {
+		console.log('args:');
+		console.log(typeof(args))
+		// console.log( 'args ' + JSON.stringify(args, null, 4) );
+		console.log( args );
+	}
+
+	// this.cbq(AE::cv);
 	
-	console.log( 'ADD ' + JSON.stringigy(this, null, 4) ) if DEBUG;
-	
-	this._cbq[-2].cb( args[0] );
+	// this._cbq[-2].cb( args[0] );
+	this.cbq( args );
+
+	if (DEBUG) {
+		console.log( 'ADD ' + JSON.stringify(this, null, 4) );
+		// console.log( 'ADD ' + this );
+	}
 }
 
 
-callbackQ.prototype.next = function (...args) {
+callbaq.prototype.next = function (...args) {
 	var self = this;
+
 	this.current_step( this.current_step() +1);
 	
-	console.log( 'NEXT ' + JSON.stringigy(this, null, 4) ) if DEBUG;
+	if (DEBUG) {
+		console.log( 'NEXT ' + JSON.stringify(this, null, 4) );
+		console.log('args:');
+		console.log(typeof(args))
+		// console.log( 'args ' + JSON.stringify(args, null, 4) );
+		console.log( args );
+	}
 	
 	this.step(this.current_step(), args);
 }
 
 
-callbackQ.prototype.step = function (...args) {
+callbaq.prototype.step = function (...args) {
 	var self = this;
-	typeof(args[0]) === 'int' ? this.current_step(args.shift()) : die 'input is not a number in step()';
+
+	if (typeof(args[0]) === 'number') {
+		this._current_step = args.shift();
+		if (DEBUG) {
+			console.warn("Step is number")
+		}
+	} else {
+		throw new Error('input is not a number in step()');
+	}
 	
-	console.log( 'STEP ' + JSON.stringigy(this, null, 4) ) if DEBUG;
-	
-	this.cbq[this._current_step].send( args );
+	if (DEBUG) {
+		console.log( 'STEP ' + JSON.stringify(this, null, 4) );
+		console.log('_current_step ' + this._current_step);
+		console.log(typeof(this._cbq[this._current_step]));
+		console.log('args:');
+		console.log(typeof(args))
+		// console.log( 'args ' + JSON.stringify(args, null, 4) );
+		console.log( args );
+	}
+
+	this._cbq[this._current_step]( args );
 }
 
 
-callbackQ.prototype.current_step = function (...args) {
+callbaq.prototype.last = function (...args) {
 	var self = this;
 	
-	this._current_step = args[0] if args[0];
-	
-	return this._current_step;
+	if (DEBUG) {
+		console.log( 'LAST ' + JSON.stringify(this, null, 4) );
+	}
+
+	return this._cbq[-1];
 }
 
 
-callbackQ.prototype.last = async function (...args) {
-	var self = this;
-	
-	say 'LAST '.Dumper ($self) if DEBUG;
-	
-	return ($self->cbq)[-1];
-}
-
-
-module.exports = callbackQ;
+module.exports = callbaq;

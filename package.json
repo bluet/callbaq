@@ -1,5 +1,5 @@
 {
-  "name": "callbackq",
+  "name": "callbaq",
   "version": "1.0.0",
   "description": "Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable.",
   "main": "index.js",
@@ -8,14 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BlueT/callbackQ.git"
+    "url": "git+https://github.com/BlueT/callbaq.git"
   },
   "keywords": [
     "callback",
-    "callback",
     "queue",
-    "callback",
-    "hell",
+    "callback queue",
+    "callback hell",
     "procedual",
     "async",
     "promises"
@@ -23,7 +22,12 @@
   "author": "BlueT - Matthew Lien - 練喆明 <BlueT@BlueT.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/BlueT/callbackQ/issues"
+    "url": "https://github.com/BlueT/callbaq/issues"
   },
-  "homepage": "https://github.com/BlueT/callbackQ#readme"
+  "homepage": "https://github.com/BlueT/callbaq#readme",
+  "dependencies": {
+    "app-root-path": "^2.0.1",
+    "jshint": "^2.9.5",
+    "tape": "^4.9.0"
+  }
 }
