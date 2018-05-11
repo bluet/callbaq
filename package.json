@@ -15,9 +15,10 @@
     "queue",
     "callback queue",
     "callback hell",
-    "procedual",
+    "procedural",
     "async",
-    "promises"
+    "promise",
+    "workflow"
   ],
   "author": "BlueT - Matthew Lien - 練喆明 <BlueT@BlueT.org>",
   "license": "MIT",
