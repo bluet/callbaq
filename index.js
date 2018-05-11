@@ -18,16 +18,16 @@ function callbackQ (...args) {
 };
 
 
-callbackQ.prototype.cbq = async function (...args) {
+callbackQ.prototype.cbq = function (...args) {
 	var self = this;
 	
-	push @{$self->{'cbq'}}, @_ if @_;
+	push this._cbq, @_ if @_;
 	
-	return @{$self->{'cbq'}};
+	return this._cbq;
 }
 
 
-callbackQ.prototype.start = async function (...args) {
+callbackQ.prototype.start = function (...args) {
 	var self = this;
 	
 	this.current_step = 0;
@@ -45,17 +45,17 @@ callbackQ.prototype.start = async function (...args) {
  * @returns {Function} handler
  * 
  */
-callbackQ.prototype.add = async function (...args) {
+callbackQ.prototype.add = function (...args) {
 	var self = this;
-	//~ $self->cbq(AE::cv);
+	this.cbq(AE::cv);
 	
 	console.log( 'ADD ' + JSON.stringigy(this, null, 4) ) if DEBUG;
 	
-	($self->cbq)[-2]->cb( shift );
+	this._cbq[-2].cb( args[0] );
 }
 
 
-callbackQ.prototype.next = async function (...args) {
+callbackQ.prototype.next = function (...args) {
 	var self = this;
 	this.current_step( this.current_step() +1);
 	
@@ -65,7 +65,7 @@ callbackQ.prototype.next = async function (...args) {
 }
 
 
-callbackQ.prototype.step = async function (...args) {
+callbackQ.prototype.step = function (...args) {
 	var self = this;
 	typeof(args[0]) === 'int' ? this.current_step(args.shift()) : die 'input is not a number in step()';
 	
@@ -75,7 +75,7 @@ callbackQ.prototype.step = async function (...args) {
 }
 
 
-callbackQ.prototype.current_step = async function (...args) {
+callbackQ.prototype.current_step = function (...args) {
 	var self = this;
 	
 	this._current_step = args[0] if args[0];
