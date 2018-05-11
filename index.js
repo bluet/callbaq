@@ -148,7 +148,7 @@ callbaq.prototype.step = function (...args) {
 		console.log( args );
 	}
 
-	this._cbq[this._current_step]( args );
+	this._cbq[this._current_step]( this, args );
 }
 
 
