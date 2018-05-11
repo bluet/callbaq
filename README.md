@@ -12,7 +12,7 @@
 ## SYNOPSIS
 
 ```javascript
-var callbaq = require('./index');
+var callbaq = require('callbaq');
 var cb1 = new callbaq;
 
 cb1.add(function (cbq, input) {
@@ -42,7 +42,7 @@ here we go : y0y0
 Get a new callback queue / flow.
 
 ```javascript
-var callbaq = require('./index');
+var callbaq = require('callbaq');
 var cb1 = new callbaq;
 ```
 
@@ -88,7 +88,7 @@ You can have multiple callbaq instances working together or independently.
 Just new some and enjoy them.
 
 ```javascript
-var callbaq = require('./index');
+var callbaq = require('callbaq');
 var cb1 = new callbaq;
 var cb2 = new callbaq;
 
