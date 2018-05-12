@@ -1,7 +1,7 @@
 {
   "name": "callbaq",
-  "version": "1.0.3",
-  "description": "Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable.",
+  "version": "1.0.4",
+  "description": "Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable. Lightweight, Zero Dependency.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,10 +25,5 @@
   "bugs": {
     "url": "https://github.com/BlueT/callbaq/issues"
   },
-  "homepage": "https://github.com/BlueT/callbaq#readme",
-  "dependencies": {
-    "app-root-path": "^2.0.1",
-    "jshint": "^2.9.5",
-    "tape": "^4.9.0"
-  }
+  "homepage": "https://github.com/BlueT/callbaq#readme"
 }
