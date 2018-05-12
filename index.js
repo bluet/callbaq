@@ -9,45 +9,39 @@
 
 DEBUG = 0;
 
-function callbaq (...args) {
+function callbaq ({_cbq = [], _current_step = 0} = {}) {
 	var self = this;
 	
-	this._cbq = [];
+	this._cbq = _cbq;
 	//~ push @cbq, AE::cv;
-	this._current_step = 0;
+	this._current_step = _current_step;
 	
 	if (DEBUG) {
-		console.log( 'New ' + JSON.stringify(this, null, 4) );
+		console.debug( 'New ' + JSON.stringify(this, null, 4) );
 	}
 };
 
 
-callbaq.prototype.cbq = function (args) {
+callbaq.prototype.cbq = function (arg) {
 	var self = this;
 
 	if (DEBUG) {
-		console.log("in cbq!");
-		console.log('args:');
-		console.log(typeof(args))
-		// console.log( 'args ' + JSON.stringify(args, null, 4) );
-		console.log( args );
-	}
-
-	if (DEBUG) {
-		console.log('this._cbq:');
-		console.log(typeof(this._cbq))
-		// console.log( 'args ' + JSON.stringify(args, null, 4) );
-		console.log( this._cbq );
+		console.debug('in cbq! args: ' + typeof(arg));
+		console.debug( arg );
+		console.debug('this._cbq: ' + typeof(this._cbq));
+		console.debug( this._cbq );
 	}
 	
-	if (args) {
-		this._cbq.push(args);
+	if (arg) {
+		if (typeof arg !== 'function') {
+			console.warn("Adding a non-function object/value into callback queue is unusual and might cause weird bugs. But I don't know what you wanna do, so continue anyway.\n" + typeof(arg) )
+		}
+		this._cbq.push(arg);
 	}
 
 	if (DEBUG) {
-		console.log( 'CBQ ' + JSON.stringify(this, null, 4) );
-		console.log( this._cbq );
-		// console.log( 'ADD ' + this );
+		console.debug('CBQ pushed: ');
+		console.debug( this._cbq );
 	}
 	
 	return this._cbq;
@@ -55,11 +49,11 @@ callbaq.prototype.cbq = function (args) {
 
 
 
-callbaq.prototype.current_step = function current_step (args) {
+callbaq.prototype.current_step = function current_step (arg) {
 	var self = this;
 	
-	if (args) {
-		this._current_step = args;
+	if (arg) {
+		this._current_step = arg;
 	}
 
 	return this._current_step;
@@ -68,15 +62,13 @@ callbaq.prototype.current_step = function current_step (args) {
 
 callbaq.prototype.start = function (...args) {
 	var self = this;
-	
 	this._current_step = 0;
 	
 	if (DEBUG) {
-		console.log( args );
-		console.log( 'Start ' + JSON.stringify(this, null, 4) );
+		console.debug( 'Start ' + JSON.stringify(args, null, 4) );
 	}
-	// this.step(this.current_step(), args);
-	this.step(this.current_step(), args);
+	
+	this.step(this.current_step(), ...args);
 }
 
 
@@ -88,23 +80,23 @@ callbaq.prototype.start = function (...args) {
  * @returns {Function} handler
  * 
  */
-callbaq.prototype.add = function (args) {
+callbaq.prototype.add = function (arg) {
 	var self = this;
 	if (DEBUG) {
-		console.log('args:');
-		console.log(typeof(args))
-		// console.log( 'args ' + JSON.stringify(args, null, 4) );
-		console.log( args );
+		console.debug('args:');
+		console.debug(typeof(arg))
+		// console.debug( 'args ' + JSON.stringify(args, null, 4) );
+		console.debug( arg );
 	}
 
 	// this.cbq(AE::cv);
 	
 	// this._cbq[-2].cb( args[0] );
-	this.cbq( args );
+	this.cbq( arg );
 
 	if (DEBUG) {
-		console.log( 'ADD ' + JSON.stringify(this, null, 4) );
-		// console.log( 'ADD ' + this );
+		console.debug( 'ADD ' + JSON.stringify(this, null, 4) );
+		// console.debug( 'ADD ' + this );
 	}
 }
 
@@ -115,40 +107,42 @@ callbaq.prototype.next = function (...args) {
 	this.current_step( this.current_step() +1);
 	
 	if (DEBUG) {
-		console.log( 'NEXT ' + JSON.stringify(this, null, 4) );
-		console.log('args:');
-		console.log(typeof(args))
-		// console.log( 'args ' + JSON.stringify(args, null, 4) );
-		console.log( args );
+		console.debug( 'NEXT ' + JSON.stringify(this, null, 4) );
+		console.debug('args:');
+		console.debug(typeof(args[0]))
+		// console.debug( 'args ' + JSON.stringify(args, null, 4) );
+		console.debug( args[0] );
 	}
 	
-	this.step(this.current_step(), args);
+	this.step(this.current_step(), ...args);
 }
 
 
-callbaq.prototype.step = function (...args) {
+callbaq.prototype.step = function (step, ...args) {
 	var self = this;
 
-	if (typeof(args[0]) === 'number') {
-		this._current_step = args.shift();
+	// console.debug(args)
+
+	if (typeof(step) === 'number') {
+		this._current_step = step;
 		if (DEBUG) {
-			console.warn("Step is number")
+			console.debug("Step is number")
 		}
 	} else {
-		throw new Error('input is not a number in step()');
+		throw new Error("First argument for step() must be a 'number'. Current input is a " + typeof(step));
 	}
 	
 	if (DEBUG) {
-		console.log( 'STEP ' + JSON.stringify(this, null, 4) );
-		console.log('_current_step ' + this._current_step);
-		console.log(typeof(this._cbq[this._current_step]));
-		console.log('args:');
-		console.log(typeof(args))
-		// console.log( 'args ' + JSON.stringify(args, null, 4) );
-		console.log( args );
+		console.debug( 'STEP ' + JSON.stringify(this, null, 4) );
+		console.debug('_current_step ' + this._current_step);
+		console.debug(typeof(this._cbq[this._current_step]));
+		console.debug('args:');
+		console.debug(typeof(args))
+		// console.debug( 'args ' + JSON.stringify(args, null, 4) );
+		console.debug( args );
 	}
 
-	this._cbq[this._current_step]( this, args );
+	this._cbq[this.current_step()]( this, ...args );
 }
 
 
@@ -156,7 +150,7 @@ callbaq.prototype.last = function (...args) {
 	var self = this;
 	
 	if (DEBUG) {
-		console.log( 'LAST ' + JSON.stringify(this, null, 4) );
+		console.debug( 'LAST ' + JSON.stringify(this, null, 4) );
 	}
 
 	return this._cbq[-1];
