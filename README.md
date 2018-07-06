@@ -10,21 +10,42 @@ Lightweight, **Zero Dependency.**
 
 ```javascript
 var Callbaq = require('callbaq');
-var cb1 = new Callbaq();
-
-// add callback functions
-cb1.add(function (cbq, input) {
-        console.log("1: hello world : " + input);
-        cbq.next("y0y0");
-})
-cb1.add(function (cbq, input) { console.log("2: here we go : " + input); })
+var workflow = new Callbaq();
 
 // kickoff
-cb1.start("new world!");
+workflow.start("new world!");
+
+// add callback functions
+workflow.add(function (cbq, input) {
+        console.log("1: hello world : " + input);
+        cbq.next("y0y0");
+});
+workflow.add(function (cbq, input) { console.log("2: here we go : " + input); });
 
 // output:
 // 1: hello world : new world!
 // 2: here we go : y0y0
+```
+
+Or fire it later, also try using aliases methods
+
+```javascript
+// add callback functions
+workflow.add(function (cbq, input) {
+        console.log("1: hello world : " + input);
+        cbq.resolve("y0y0");
+});
+workflow.then(function (cbq, input) {
+        console.log("2: here we go : " + input);
+        return "knock knock";
+});
+// fire
+var door = workflow.start("new world!");
+
+// output:
+// 1: hello world : new world!
+// 2: here we go : y0y0
+// content of door: "knock knock"
 ```
 
 ## DESCRIPTION
@@ -46,10 +67,18 @@ Get a new callback queue / flow.
 
 ```javascript
 var Callbaq = require('callbaq');
-var cb1 = new Callbaq();
+var callbaq = new Callbaq();
 ```
 
-### **add**
+### **start**
+
+Start and walk through the workflow from step 0.
+
+```javascript
+callbaq.start("new world!");
+```
+
+### **add / then**
 
 Add (append) a function for use as a callback, which will be executed at the next step.
 
@@ -58,30 +87,27 @@ The parameters for callback are:
 2. params from `start()` or the output of previous (step) callback function.
 
 ```javascript
-cb1.add(function (cbq, input) {
+callbaq.add(function (cbq, input) {
         console.log("something cool : " + input);
         cbq.next("a secret");
-})
+});
+callbaq.then(function (cbq, input) {
+        console.log("finished with " + input);
+});
 ```
 
 
-### **next**
+### **next / resolve**
 
 Check out from the current step and pass result to next step / callback function when works are done.
 
 ```javascript
-cb1.add(function (cbq, input) {
-        // do something
+callbaq.add(function (cbq, input) {
+        cbq.resolve("A master piece");
+});
+callbaq.then(function (cbq, input) {
         cbq.next("A master piece");
 })
-```
-
-### **start**
-
-Start and walk through the workflow from step 0.
-
-```javascript
-cb1.start("new world!");
 ```
 
 ## EXPERIMENTAL use of Methods
@@ -96,8 +122,8 @@ Similar to add(). Returns the queue array.
 If called with a function object, the function object will be append into queue.
 
 ```javascript
-var old_queue = cb1.cbq();
-var new_queue = cb1.cbq(function(cbq){ cbq.next("did something") });
+var old_queue = callbaq.cbq();
+var new_queue = callbaq.cbq(function(cbq){ cbq.next("did something") });
 ```
 
 ### current_step
@@ -118,7 +144,7 @@ cbq.next("some params");
 Call specific step.
 
 ```javascript
-cb1.step(3, "some params");
+callbaq.step(3, "some params");
 ```
 
 
@@ -127,6 +153,10 @@ cb1.step(3, "some params");
 The following methods are for EXPERIMENTAL usage and for Expert Only, might change in the future.
 
 Avoid accessing them directly if possible.
+
+### dataqueue
+
+The queue of data awaiting for being input of callback functions, `Array` of `any`.
 
 ### _cbq
 
@@ -139,13 +169,14 @@ Current step, in `number`.
 ### Create with custom initial values
 
 ```javascript
-var qqq = [];
-var uselessfx = (cbq) => {/*...*/}
-qqq.push(uselessfx);
-qqq.push(uselessfx);
+var dataqueue = [1, 2];
 
 // new with default values
-var custom_cbq = new Callbaq({_cbq: qqq, _current_step: 1});
+var callbaq = new Callbaq({dataqueue: dataqueue});
+callbaq.add(function (cbq, input) {
+        console.log("something in data queue: ", input);
+});
+// will be executed immediately without needing callbaq.start()
 ```
 
 ## EXAMPLES
@@ -156,60 +187,21 @@ Just new some and enjoy them.
 
 <https://github.com/BlueT/callbaq/blob/master/example.js>
 
-```javascript
-var Callbaq = require('callbaq');
-
-// create instances, or event put them in array
-var cb1 = new Callbaq();
-var cb2 = new Callbaq({_cbq: [], _current_step: 0});
-
-// add jobs to callback queue 1
-cb1.add(function (cbq, input) {
-        console.log("cb1, step 1: hello world : ", input);
-        cbq.next("y0y0");
-});
-cb1.add(function (cbq, input) {
-        console.log("cb1, step 2: here we go : ", input);
-});
-
-// add tasks to flow 2 (in ES6 style), and an inner one
-cb2.add( (cbq, input) => {
-        console.log("cb2, step 1: Are you ok : " + input);
-        outer_cbq = cbq;
-
-        // an inner one
-        let inner_cb = new Callbaq();
-        inner_cb.add( (cbq, who) => {
-                console.log(`---> inner1: asking ${who}`);
-                cbq.next("fine")
-        });
-        inner_cb.add( (cbq, result) => {
-                console.log(`---> inner2: he's ${result}`);
-
-                // add a new callback for cb2 just in time
-                cb2.add( (cbq, input) => { console.log("cb2, step 2: I am very ok : " + input); });
-
-                outer_cbq.next("Let's rock N roll");
-        });
-        inner_cb.start(input);
-
-});
-
-// fire in da hole
-cb1.start("new world!");
-console.log("----------");
-cb2.start("bro");
-
-
-// Output:
-// cb1, step 1: hello world :  new world!
-// cb1, step 2: here we go :  y0y0
-// ----------
-// cb2, step 1: Are you ok : bro
-// ---> inner1: asking bro
-// ---> inner2: he's fine
-// cb2, step 2: I am very ok : Let's rock N roll
-
+```
+Output:
+	cb1, step 1: hello world :  [ 'new world!' ]
+v->	cb1, step 2: here we go :  [ 'y0y0' ]
+|	----------
+|	cb2, step 1: Are you ok : bro
+|	---> inner1: asking bro
+|	---> inner2: he's fine
+|	cb2, step 2: I am very ok : Let's rock N roll
+|	----------
+^->	cb1, step 3: here we go :  [ 'hEy Lo' ]
+	----------
+	something in data queue:  1
+	and guess what!  [ 'lala' ]
+	from dataqueue again!  2
 ```
 
 ## AUTHOR

@@ -101,14 +101,14 @@ callbaq.prototype.add = function _add (arg) {
 		console.debug( arg );
 	}
 
-	this.cbq( arg );
+	let order = this.cbq( arg ).length - 1;
 
 	if (DEBUG) {
 		console.debug( 'ADDED ' + JSON.stringify(this, null, 4) );
 	}
 
 	if (this.dataqueue.length > 0) {
-		return this.step();
+		return this.step(order);
 	}
 };
 
@@ -124,11 +124,12 @@ callbaq.prototype.next = function _next (...args) {
 		console.debug('args: ' + typeof(args));
 		console.debug( args );
 	}
-
-	this.dataqueue.unshift(args);
 	
-	// return this.step(this.current_step(), ...args);
-	if (this._cbq[this.current_step()]) {
+	if (args.length > 0 || this.dataqueue.length === 0) {
+		this.dataqueue.unshift(args);
+	}
+
+	if (this._cbq[this.current_step() + 1]) {
 		this.current_step( this.current_step() + 1 );
 		return this.step(this.current_step());
 	}
@@ -138,8 +139,12 @@ callbaq.prototype.next = function _next (...args) {
 callbaq.prototype.resolve = callbaq.prototype.next;
 
 
-callbaq.prototype.step = function (step=this._current_step, ...args) {
+callbaq.prototype.step = function (step, ...args) {
 	var self = this;
+
+	if (typeof step === 'undefined') {
+		step = this._current_step;
+	}
 
 	if (typeof(step) === 'number') {
 		this._current_step = step;
@@ -160,8 +165,9 @@ callbaq.prototype.step = function (step=this._current_step, ...args) {
 
 	if (this._cbq[this.current_step()]) {
 		if (args.length <= 0 && this.dataqueue.length > 0) {
-			args = this.dataqueue.shift();
+			args = [this.dataqueue.shift()];
 		}
+
 		return this._cbq[this.current_step()]( this, ...args );
 	}
 };
