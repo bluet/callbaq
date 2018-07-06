@@ -4,6 +4,7 @@ var Callbaq = require('./index');
 var cb1 = new Callbaq();
 var cb2 = new Callbaq({_cbq: [], _current_step: 0});
 
+cb1.start("new world!");
 // add jobs to callback queue 1
 cb1.add(function (cbq, input) {
         console.log("cb1, step 1: hello world : ", input);
@@ -11,6 +12,10 @@ cb1.add(function (cbq, input) {
 });
 cb1.add(function (cbq, input) {
         console.log("cb1, step 2: here we go : ", input);
+        cbq.resolve("hEy Lo");
+});
+cb1.then(function (cbq, input) {
+        console.log("cb1, step 3: here we go : ", input);
 });
 
 // add tasks to flow 2 (in ES6 style), and an inner one
@@ -37,6 +42,5 @@ cb2.add( (cbq, input) => {
 });
 
 // fire in da hole
-cb1.start("new world!");
 console.log("----------");
 cb2.start("bro");

@@ -9,16 +9,19 @@
 /*jshint esversion: 6 */
 
 
-DEBUG = 0;
+DEBUG = process.env.CALLBAQ_DEBUG;
 
-function callbaq ({_cbq = [], _current_step = 0} = {}) {
+function callbaq ({_cbq = [], dataqueue = [], _current_step = 0} = {}) {
 	var self = this;
 	this._cbq = _cbq;
+	this.dataqueue = dataqueue;
 	this._current_step = _current_step;
 	
 	if (DEBUG) {
 		console.debug( 'New ' + JSON.stringify(this, null, 4) );
 	}
+
+	return this;
 }
 
 
@@ -49,7 +52,7 @@ callbaq.prototype.cbq = function (arg) {
 
 
 
-callbaq.prototype.current_step = function current_step (arg) {
+callbaq.prototype.current_step = function (arg) {
 	var self = this;
 	
 	if (arg) {
@@ -67,24 +70,31 @@ callbaq.prototype.current_step = function current_step (arg) {
 callbaq.prototype.start = function (...args) {
 	var self = this;
 	this._current_step = 0;
-	
+
 	if (DEBUG) {
-		console.debug( 'Start ' + JSON.stringify(args, null, 4) );
+		console.debug( 'Start with ' + JSON.stringify(args, null, 4) );
+	}
+
+	if (args.length > 0) {
+		this.dataqueue.unshift(args);
 	}
 	
-	this.step(this.current_step(), ...args);
+	// return this.step(this.current_step(), ...args);
+	if (this._cbq.length > 0) {
+		return this.step(this.current_step());
+	}
 };
 
 
 /*
  * 
  * name: add
- * @param {Function} step callback - a callback function for the comming step
+ * @param {Function} step callback - a callback function for the coming step
  * @returns {String} err
  * @returns {Function} handler
  * 
  */
-callbaq.prototype.add = function (arg) {
+callbaq.prototype.add = function _add (arg) {
 	var self = this;
 	if (DEBUG) {
 		console.debug('Calling add() with args: ' + typeof(arg));
@@ -96,25 +106,39 @@ callbaq.prototype.add = function (arg) {
 	if (DEBUG) {
 		console.debug( 'ADDED ' + JSON.stringify(this, null, 4) );
 	}
+
+	if (this.dataqueue.length > 0) {
+		return this.step();
+	}
 };
 
 
-callbaq.prototype.next = function (...args) {
-	var self = this;
+callbaq.prototype.then = callbaq.prototype.add;
 
-	this.current_step( this.current_step() + 1 );
+
+callbaq.prototype.next = function _next (...args) {
+	var self = this;
 	
 	if (DEBUG) {
 		console.debug( 'NEXT ' + JSON.stringify(this, null, 4) );
 		console.debug('args: ' + typeof(args));
 		console.debug( args );
 	}
+
+	this.dataqueue.unshift(args);
 	
-	this.step(this.current_step(), ...args);
+	// return this.step(this.current_step(), ...args);
+	if (this._cbq[this.current_step()]) {
+		this.current_step( this.current_step() + 1 );
+		return this.step(this.current_step());
+	}
 };
 
 
-callbaq.prototype.step = function (step, ...args) {
+callbaq.prototype.resolve = callbaq.prototype.next;
+
+
+callbaq.prototype.step = function (step=this._current_step, ...args) {
 	var self = this;
 
 	if (typeof(step) === 'number') {
@@ -129,12 +153,17 @@ callbaq.prototype.step = function (step, ...args) {
 	
 	if (DEBUG) {
 		console.debug( 'STEP ' + JSON.stringify(this, null, 4) );
-		console.debug('_current_step: ' + this._current_step + "Type: " + typeof(this._cbq[this._current_step]));
+		console.debug('_current_step: ' + this._current_step + " Type: " + typeof(this._cbq[this._current_step]));
 		console.debug('args: ' + typeof(args));
 		console.debug( args );
 	}
 
-	this._cbq[this.current_step()]( this, ...args );
+	if (this._cbq[this.current_step()]) {
+		if (args.length <= 0 && this.dataqueue.length > 0) {
+			args = this.dataqueue.shift();
+		}
+		return this._cbq[this.current_step()]( this, ...args );
+	}
 };
 
 
