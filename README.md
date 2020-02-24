@@ -1,4 +1,6 @@
 # Callbaq
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbluet%2Fcallbaq.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbluet%2Fcallbaq?ref=badge_shield)
+
 
 ## NAME
 
@@ -228,3 +230,6 @@ Hope this module can save your time, a tree, and a kitten.
 ## SEE ALSO
 
 AnyEvent::CallbackStack - Perl version https://github.com/BlueT/AnyEvent-CallbackStack
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbluet%2Fcallbaq.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbluet%2Fcallbaq?ref=badge_large)
