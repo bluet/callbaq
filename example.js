@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 let Callbaq = require("./index");
 
 // create instances, or event put them in array
