@@ -1,0 +1,16 @@
+[ignore]
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
+
+[untyped]
+
+[declarations]
+.*/node_modules/.*

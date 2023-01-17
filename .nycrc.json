@@ -1,0 +1,15 @@
+{
+  "include": [
+    "index.js"
+  ],
+  "exclude": [
+    "node_modules/**",
+    "coverage/**",
+    "t/**"
+  ],
+  "reporter": [
+    "lcovonly",
+    "text",
+    "text-summary"
+  ]
+}

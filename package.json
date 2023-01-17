@@ -4,7 +4,7 @@
   "description": "Convert nested callback hell into serial procedural coding style, which is more readable, writable, and maintainable. Lightweight, Zero Dependency.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "CALLBAQ_DEBUG=1 nyc tape ./t/**test.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,13 @@
   "bugs": {
     "url": "https://github.com/BlueT/callbaq/issues"
   },
-  "homepage": "https://github.com/BlueT/callbaq#readme"
+  "homepage": "https://github.com/BlueT/callbaq#readme",
+  "tonicExampleFilename": "./example.js",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
+    "eslint": "^8.32.0",
+    "nyc": "^15.1.0",
+    "prettier": "^2.8.3",
+    "tape": "^5.6.3"
+  }
 }
