@@ -28,7 +28,7 @@
   "homepage": "https://github.com/BlueT/callbaq#readme",
   "tonicExampleFilename": "./example.js",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.19.1",
+    "@babel/eslint-parser": "^8.0.0",
     "eslint": "^10.2.0",
     "nyc": "^18.0.0",
     "prettier": "^3.0.0",
